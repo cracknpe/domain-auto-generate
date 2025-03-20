@@ -28,8 +28,8 @@ interface NamesiloResponse {
 }
 
 const CHAT_API_URL = 'https://api.siliconflow.cn/v1/chat/completions';
-const CHAT_API_KEY = 'sk-hotmgievswtbaluggphztkhhdeblpcqynvpgyrtlomylfmaf';
-const NAMESILO_API_KEY = '7ed1cb89117cefdb0fc6fded2';
+const CHAT_API_KEY = 'sk-jokgjisfdfidbxyfejgqmlmornxxbeutmbcimrrofyurwvqc';
+const PROXY_URL = 'https://lookupwiz.com/api/check-domain';
 
 async function checkDomainAvailability(domains: string[]): Promise<DomainSuggestion[]> {
   if (!domains.length) {
@@ -39,7 +39,7 @@ async function checkDomainAvailability(domains: string[]): Promise<DomainSuggest
   try {
     const domainList = domains.join(',');
     const response = await axios.get<NamesiloResponse>(
-      `https://www.namesilo.com/api/checkRegisterAvailability?version=1&type=json&key=${NAMESILO_API_KEY}&domains=${domainList}`
+      `${PROXY_URL}?domains=${domainList}`
     );
 
     if (!response.data?.reply?.code || response.data.reply.code !== 300) {
