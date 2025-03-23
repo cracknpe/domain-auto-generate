@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sparkles, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Sparkles, CheckCircle, XCircle, Flame } from 'lucide-react';
 import { generateDomainSuggestions } from '../utils/domainGenerator';
 
 const ExampleCard = ({ title, description }: { title: string; description: string }) => (
@@ -59,6 +59,75 @@ const LoadingAnimation = () => {
           </div>
         </div>
       </div>
+  );
+};
+
+const DomainCard = ({ suggestion }: { suggestion: DomainSuggestion }) => {
+  const isSpecialTLD = ['.com', '.net', '.org'].includes(suggestion.tld);
+  const fullDomain = `${suggestion.name}${suggestion.tld}`;
+  const domainLink = isSpecialTLD
+      ? 'https://www.shareasale.com/r.cfm?b=2565835&u=4427351&m=155350'
+      : `https://www.namesilo.com/domain/search-domains/?query=${fullDomain}`;
+
+  return (
+      <a
+          href={domainLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`block bg-white rounded-lg shadow-md p-4 transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${isSpecialTLD && suggestion.available ? 'border-2 border-red-500' : ''}`}
+      >
+        <div className="flex justify-between items-start">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="text-lg font-medium">
+                {fullDomain}
+              </div>
+              {isSpecialTLD && suggestion.available && (
+                  <div className="relative">
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                    <div className="flex items-center bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
+                      <Flame className="h-4 w-4 mr-1.5 animate-pulse" />
+                      Hot Sale!
+                    </div>
+                  </div>
+              )}
+            </div>
+            <div className="text-sm text-gray-500 mt-1">
+              {suggestion.available ? (
+                  <span className="flex items-center text-green-600">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                Available
+              </span>
+              ) : (
+                  <span className="flex items-center text-red-600">
+                <XCircle className="h-4 w-4 mr-1" />
+                Taken
+              </span>
+              )}
+            </div>
+          </div>
+          {suggestion.available && (
+              <div className="text-right">
+                <div className="text-indigo-600 font-semibold">
+                  {isSpecialTLD ? (
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm line-through text-gray-400">${suggestion.price}/yr</span>
+                        <span className="text-xl font-bold text-red-600 animate-pulse">$4.95/yr</span>
+                        <span className="text-xs text-red-500 font-medium">Limited Time!</span>
+                      </div>
+                  ) : (
+                      <span>${suggestion.price}/yr</span>
+                  )}
+                </div>
+                {!isSpecialTLD && suggestion.renewPrice && (
+                    <div className="text-sm text-gray-500">
+                      Renews at ${suggestion.renewPrice}/yr
+                    </div>
+                )}
+              </div>
+          )}
+        </div>
+      </a>
   );
 };
 
@@ -152,41 +221,7 @@ const Home = () => {
                 <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Domain Suggestions</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {suggestions.map((suggestion, index) => (
-                      <div
-                          key={index}
-                          className="bg-white rounded-lg shadow-md p-4 transform transition-all duration-300 hover:scale-105"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="text-lg font-medium">
-                              {suggestion.name}{suggestion.tld}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {suggestion.available ? (
-                                  <span className="flex items-center text-green-600">
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            Available
-                          </span>
-                              ) : (
-                                  <span className="flex items-center text-red-600">
-                            <XCircle className="h-4 w-4 mr-1" />
-                            Taken
-                          </span>
-                              )}
-                            </div>
-                          </div>
-                          {suggestion.available && suggestion.price && (
-                              <div className="text-right">
-                                <div className="text-indigo-600 font-semibold">
-                                  ${suggestion.price}/yr
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  Renews at ${suggestion.renewPrice}/yr
-                                </div>
-                              </div>
-                          )}
-                        </div>
-                      </div>
+                      <DomainCard key={index} suggestion={suggestion} />
                   ))}
                 </div>
               </div>
