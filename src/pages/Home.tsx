@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sparkles, CheckCircle, XCircle, Flame } from 'lucide-react';
+import { Search, Sparkles, CheckCircle, XCircle, Flame, Shield, Clock, CreditCard, ArrowRight, Star, DollarSign, Zap } from 'lucide-react';
 import { generateDomainSuggestions } from '../utils/domainGenerator';
 
 const ExampleCard = ({ title, description }: { title: string; description: string }) => (
@@ -75,9 +75,22 @@ const DomainCard = ({ suggestion }: { suggestion: DomainSuggestion }) => {
           target="_blank"
           rel="noopener noreferrer"
           className={`block bg-white rounded-lg shadow-md p-4 transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${isSpecialTLD && suggestion.available ? 'border-2 border-red-500' : ''}`}
+          onClick={() => {
+            try {
+              if (window.gtag) {
+                window.gtag('event', 'domain_click', {
+                  'event_category': 'affiliate',
+                  'event_label': fullDomain,
+                  'value': isSpecialTLD ? 1 : 0
+                });
+              }
+            } catch (e) {
+              console.error('Analytics error:', e);
+            }
+          }}
       >
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-grow">
             <div className="flex items-center gap-2">
               <div className="text-lg font-medium">
                 {fullDomain}
@@ -105,31 +118,95 @@ const DomainCard = ({ suggestion }: { suggestion: DomainSuggestion }) => {
               </span>
               )}
             </div>
+            {isSpecialTLD && suggestion.available && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Shield className="h-4 w-4 mr-1.5 text-green-600" />
+                    Free Privacy Protection
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Clock className="h-4 w-4 mr-1.5 text-blue-600" />
+                    Instant Setup
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CreditCard className="h-4 w-4 mr-1.5 text-purple-600" />
+                    Money Back Guarantee
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Star className="h-4 w-4 mr-1.5 text-yellow-500" />
+                    Premium Support
+                  </div>
+                </div>
+            )}
           </div>
           {suggestion.available && (
               <div className="text-right">
                 <div className="text-indigo-600 font-semibold">
                   {isSpecialTLD ? (
                       <div className="flex flex-col items-end">
+                        <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium mb-1">
+                          Best Value!
+                        </div>
                         <span className="text-sm line-through text-gray-400">${suggestion.price}/yr</span>
                         <span className="text-xl font-bold text-red-600 animate-pulse">$4.95/yr</span>
                         <span className="text-xs text-red-500 font-medium">Limited Time!</span>
+                        <div className="text-xs text-gray-500 mt-1">Save ${(suggestion.price - 4.95).toFixed(2)}!</div>
+                        <button className="mt-2 flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full text-sm font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md group">
+                          Register Now
+                          <ArrowRight className="h-4 w-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
+                        </button>
                       </div>
                   ) : (
-                      <span>${suggestion.price}/yr</span>
+                      <div>
+                        <span>${suggestion.price}/yr</span>
+                        {suggestion.renewPrice && (
+                            <div className="text-sm text-gray-500">
+                              Renews at ${suggestion.renewPrice}/yr
+                            </div>
+                        )}
+                        <button className="mt-2 flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-full text-sm font-semibold hover:bg-indigo-700 transition-all duration-300">
+                          Check Availability
+                        </button>
+                      </div>
                   )}
                 </div>
-                {!isSpecialTLD && suggestion.renewPrice && (
-                    <div className="text-sm text-gray-500">
-                      Renews at ${suggestion.renewPrice}/yr
-                    </div>
-                )}
               </div>
           )}
         </div>
       </a>
   );
 };
+
+const AffiliateBenefits = () => (
+    <div className="mt-12 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-8">
+      <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+        Why Register Through DomainWizard?
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-white p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform">
+          <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4 mx-auto">
+            <DollarSign className="h-6 w-6 text-green-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2 text-center">Exclusive Deals</h3>
+          <p className="text-gray-600 text-center">Access to special pricing and promotional offers not available elsewhere</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform">
+          <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4 mx-auto">
+            <Zap className="h-6 w-6 text-blue-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2 text-center">Smart Suggestions</h3>
+          <p className="text-gray-600 text-center">AI-powered domain recommendations tailored to your needs</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform">
+          <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-4 mx-auto">
+            <Star className="h-6 w-6 text-purple-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2 text-center">Premium Support</h3>
+          <p className="text-gray-600 text-center">Expert guidance and support throughout your domain registration</p>
+        </div>
+      </div>
+    </div>
+);
 
 const Home = () => {
   const [input, setInput] = useState('');
@@ -167,11 +244,14 @@ const Home = () => {
   return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
+          <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-sm font-semibold animate-pulse">
+            🔥 Limited Time Offer: Premium Domains from $4.95/yr + Free Bonuses
+          </div>
           <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
             Find Your Perfect Domain Name
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            Enter your brand, niche, or website theme to generate creative domain suggestions powered by AI.
+            Enter your brand, niche, or website theme to discover available domains at unbeatable prices.
           </p>
         </div>
 
@@ -218,7 +298,8 @@ const Home = () => {
 
           {suggestions.length > 0 && !loading && (
               <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Domain Suggestions</h2>
+                <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Domain Suggestions</h2>
+                <p className="text-center text-gray-600 mb-6">Click on any domain to check availability and register</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {suggestions.map((suggestion, index) => (
                       <DomainCard key={index} suggestion={suggestion} />
@@ -227,6 +308,8 @@ const Home = () => {
               </div>
           )}
         </div>
+
+        <AffiliateBenefits />
 
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">Example Use Cases</h2>
